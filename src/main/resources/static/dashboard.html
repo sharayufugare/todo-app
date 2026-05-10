@@ -1,0 +1,801 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Dashboard | Todo App</title>-->
+
+<!--    &lt;!&ndash; Bootstrap &ndash;&gt;-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">-->
+
+<!--    &lt;!&ndash; Tailwind &ndash;&gt;-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--</head>-->
+
+<!--<body class="bg-gray-100 min-h-screen">-->
+
+<!--<nav class="navbar navbar-dark bg-dark px-4">-->
+<!--    <span class="navbar-brand">📝 Todo Dashboard</span>-->
+<!--    <button class="btn btn-danger" onclick="logout()">Logout</button>-->
+<!--</nav>-->
+
+<!--<div class="container mt-4">-->
+
+<!--    <div class="card p-3 shadow">-->
+<!--        <h5>Add Todo</h5>-->
+
+<!--        <div class="input-group">-->
+<!--            <input id="todoInput" class="form-control" placeholder="Enter todo">-->
+<!--            <button class="btn btn-primary" onclick="addTodo()">Add</button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <ul class="list-group mt-4" id="todoList"></ul>-->
+
+<!--</div>-->
+
+<!--<script>-->
+<!--    const API = "/api/todos";-->
+
+<!--    async function loadTodos() {-->
+<!--        const res = await fetch(API, { credentials: "include" });-->
+<!--        if (!res.ok) return;-->
+<!--        const todos = await res.json();-->
+
+<!--        todoList.innerHTML = "";-->
+<!--        todos.forEach(todo => {-->
+<!--            todoList.innerHTML += `-->
+<!--            <li class="list-group-item d-flex justify-content-between">-->
+<!--                <span style="text-decoration:${todo.completed ? 'line-through' : 'none'}">-->
+<!--                    ${todo.title}-->
+<!--                </span>-->
+<!--                <div>-->
+<!--                    <button onclick="toggle(${todo.id}, ${!todo.completed})">✔</button>-->
+<!--                    <button onclick="removeTodo(${todo.id})">🗑</button>-->
+<!--                </div>-->
+<!--            </li>`;-->
+<!--        });-->
+<!--    }-->
+
+<!--    async function addTodo() {-->
+<!--        await fetch(API, {-->
+<!--            method: "POST",-->
+<!--            headers: { "Content-Type": "application/json" },-->
+<!--            credentials: "include",-->
+<!--            body: JSON.stringify({ title: todoInput.value })-->
+<!--        });-->
+<!--        todoInput.value = "";-->
+<!--        loadTodos();-->
+<!--    }-->
+
+<!--    async function toggle(id, completed) {-->
+<!--        await fetch(`${API}/${id}`, {-->
+<!--            method: "PUT",-->
+<!--            headers: { "Content-Type": "application/json" },-->
+<!--            credentials: "include",-->
+<!--            body: JSON.stringify({ completed })-->
+<!--        });-->
+<!--        loadTodos();-->
+<!--    }-->
+
+<!--    async function removeTodo(id) {-->
+<!--        await fetch(`${API}/${id}`, {-->
+<!--            method: "DELETE",-->
+<!--            credentials: "include"-->
+<!--        });-->
+<!--        loadTodos();-->
+<!--    }-->
+
+<!--    async function logout() {-->
+<!--        await fetch("/api/auth/logout", {-->
+<!--            method: "POST",-->
+<!--            credentials: "include"-->
+<!--        });-->
+<!--        window.location.href = "/login.html";-->
+<!--    }-->
+
+<!--    loadTodos();-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Master | Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .todo-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .todo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .todo-item {
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 8px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .todo-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.1);
+        }
+
+        .todo-item.completed {
+            background-color: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-toggle {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-toggle:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .btn-logout {
+            border: 2px solid white;
+            border-radius: 10px;
+            padding: 0.5rem 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+        }
+
+        .todo-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .todo-title.completed {
+            text-decoration: line-through;
+            color: var(--gray-600);
+            opacity: 0.7;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        .stats-card {
+            border-radius: 12px;
+            border: none;
+            padding: 1.25rem;
+            color: white;
+        }
+
+        .stats-card.total {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+        }
+
+        .stats-card.completed {
+            background: linear-gradient(135deg, var(--success-color) 0%, #34d399 100%);
+        }
+
+        .stats-card.pending {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #fbbf24 100%);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: var(--gray-200);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            transition: width 0.8s ease;
+        }
+
+        .filter-btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid var(--gray-300);
+            background: white;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .alert-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
+    <div class="container-fluid">
+            <span class="navbar-brand d-flex align-items-center fw-bold">
+                <i class="fas fa-tasks me-3"></i>
+                <span>Todo Dashboard</span>
+            </span>
+        <button class="btn btn-outline-light btn-logout d-flex align-items-center" onclick="logout()">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</nav>
+
+<div class="container-fluid py-4 px-3 px-md-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold text-gray-800">My Tasks</h1>
+                    <p class="text-muted mb-0">Manage your todos efficiently</p>
+                </div>
+            </div>
+
+            <!-- Add Todo Card -->
+            <div class="card todo-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3 fw-semibold text-dark">Add New Todo</h5>
+
+                    <div class="input-group">
+                        <input id="todoInput" class="form-control form-control-lg"
+                               placeholder="What needs to be done?"
+                               onkeypress="if(event.key === 'Enter') addTodo()">
+                        <button class="btn btn-add text-white fw-semibold d-flex align-items-center" onclick="addTodo()">
+                            <i class="fas fa-plus me-2"></i>
+                            Add Todo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Todo List -->
+            <div class="card todo-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title fw-semibold text-dark mb-0">Todo List</h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="filter-btn active" onclick="filterTodos('all')">All</button>
+                            <button type="button" class="filter-btn" onclick="filterTodos('active')">Active</button>
+                            <button type="button" class="filter-btn" onclick="filterTodos('completed')">Completed</button>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+
+                    <!-- Todo List Container -->
+                    <ul class="list-unstyled mb-0" id="todoList"></ul>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="empty-state" style="display: none;">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h4 class="fw-semibold mb-2">No todos yet</h4>
+                        <p class="text-muted">Add your first todo using the form above.</p>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mt-4 pt-4 border-top">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-medium">Progress</span>
+                            <span class="fw-bold" id="progressPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Stats -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <!-- Stats Card -->
+            <div class="card todo-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4 fw-semibold text-dark">Statistics</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-12 mb-3">
+                            <div class="stats-card total">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h3 class="fw-bold mb-0" id="totalTasks">0</h3>
+                                        <small class="opacity-85">Total Tasks</small>
+                                    </div>
+                                    <i class="fas fa-tasks fs-4 opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="stats-card completed">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h3 class="fw-bold mb-0" id="completedTasks">0</h3>
+                                        <small class="opacity-85">Completed</small>
+                                    </div>
+                                    <i class="fas fa-check-circle fs-4 opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="stats-card pending">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h3 class="fw-bold mb-0" id="pendingTasks">0</h3>
+                                        <small class="opacity-85">Pending</small>
+                                    </div>
+                                    <i class="fas fa-clock fs-4 opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <small class="text-muted">Last updated: <span id="lastUpdated">Just now</span></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card todo-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3 fw-semibold text-dark">Quick Actions</h5>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary d-flex align-items-center justify-content-center" onclick="markAllComplete()">
+                            <i class="fas fa-check-double me-2"></i>
+                            Mark All Complete
+                        </button>
+                        <button class="btn btn-outline-danger d-flex align-items-center justify-content-center" onclick="clearCompleted()">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            Clear Completed
+                        </button>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="fw-semibold mb-2">Keyboard Shortcuts</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark">Enter</span>
+                            <small class="text-muted">Add todo</small>
+
+                            <span class="badge bg-light text-dark">Click ✔</span>
+                            <small class="text-muted">Toggle status</small>
+
+                            <span class="badge bg-light text-dark">Click 🗑</span>
+                            <small class="text-muted">Delete todo</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Toast -->
+<div class="alert alert-success alert-toast" id="successToast" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+        <button type="button" class="btn-close ms-auto" onclick="hideToast()"></button>
+    </div>
+</div>
+
+<!-- Your JavaScript Code (unchanged) -->
+<script>
+    const API = "/api/todos";
+
+    async function loadTodos() {
+        // Show loading spinner
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('emptyState').style.display = 'none';
+
+        try {
+            const res = await fetch(API, { credentials: "include" });
+            if (!res.ok) {
+                showToast('Failed to load todos', 'danger');
+                return;
+            }
+            const todos = await res.json();
+
+            todoList.innerHTML = "";
+
+            if (todos.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('todoList').innerHTML = '';
+            } else {
+                todos.forEach(todo => {
+                    const todoElement = document.createElement('li');
+                    todoElement.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                    todoElement.innerHTML = `
+<div class="d-flex justify-content-between align-items-center">
+  <div class="flex-grow-1">
+    <span id="title-${todo.id}" class="todo-title ${todo.completed ? 'completed' : ''}">
+      ${todo.title}
+    </span>
+    <input id="edit-${todo.id}" class="form-control d-none mt-1"
+      value="${todo.title}">
+  </div>
+
+  <div class="d-flex gap-2 ms-3">
+    <button class="btn btn-sm btn-warning" onclick="editTodo(${todo.id})">
+      <i class="fas fa-pen"></i>
+    </button>
+    <button id="save-${todo.id}" class="btn btn-sm btn-success d-none"
+      onclick="saveTodo(${todo.id})">
+      <i class="fas fa-save"></i>
+    </button>
+    <button class="btn-toggle" onclick="toggle(${todo.id}, ${!todo.completed})">
+      <i class="fas fa-check"></i>
+    </button>
+    <button class="btn-delete" onclick="removeTodo(${todo.id})">
+      <i class="fas fa-trash"></i>
+    </button>
+  </div>
+</div>`;
+                todoList.appendChild(todoElement);
+                });
+            }
+
+            // Update stats
+            updateStats(todos);
+            updateLastUpdated();
+
+        } catch (error) {
+            console.error('Error loading todos:', error);
+            showToast('Error loading todos', 'danger');
+        } finally {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+    }
+
+    async function addTodo() {
+        const todoInput = document.getElementById('todoInput');
+        const title = todoInput.value.trim();
+
+        if (!title) {
+            showToast('Please enter a todo', 'warning');
+            return;
+        }
+
+        try {
+            await fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ title: title })
+            });
+
+            todoInput.value = "";
+            showToast('Todo added successfully!', 'success');
+            loadTodos();
+        } catch (error) {
+            console.error('Error adding todo:', error);
+            showToast('Failed to add todo', 'danger');
+        }
+    }
+
+    async function toggle(id, completed) {
+        try {
+            await fetch(`${API}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ completed })
+            });
+
+            showToast(`Todo marked as ${completed ? 'completed' : 'active'}`, 'success');
+            loadTodos();
+        } catch (error) {
+            console.error('Error toggling todo:', error);
+            showToast('Failed to update todo', 'danger');
+        }
+    }
+
+    async function removeTodo(id) {
+        if (!confirm('Are you sure you want to delete this todo?')) {
+            return;
+        }
+
+        try {
+            await fetch(`${API}/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            showToast('Todo deleted successfully', 'primary');
+            loadTodos();
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+            showToast('Failed to delete todo', 'danger');
+        }
+    }
+
+    async function logout() {
+        try {
+            await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            window.location.href = "/login.html";
+        } catch (error) {
+            console.error('Error logging out:', error);
+            showToast('Failed to logout', 'danger');
+        }
+    }
+
+    // Helper functions for UI enhancements
+    function updateStats(todos) {
+        const total = todos.length;
+        const completed = todos.filter(todo => todo.completed).length;
+        const pending = total - completed;
+        const progressPercentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        document.getElementById('totalTasks').textContent = total;
+        document.getElementById('completedTasks').textContent = completed;
+        document.getElementById('pendingTasks').textContent = pending;
+        document.getElementById('progressPercentage').textContent = `${progressPercentage}%`;
+        document.getElementById('progressFill').style.width = `${progressPercentage}%`;
+    }
+
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('lastUpdated').textContent = timeString;
+    }
+
+function filterTodos(filter, btn) {
+    const todoItems = document.querySelectorAll('.todo-item');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    todoItems.forEach(item => {
+        const isCompleted = item.classList.contains('completed');
+
+        if (filter === 'all') item.style.display = 'block';
+        else if (filter === 'active') item.style.display = isCompleted ? 'none' : 'block';
+        else if (filter === 'completed') item.style.display = isCompleted ? 'block' : 'none';
+    });
+}
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('successToast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Update toast style and message
+        toast.className = `alert alert-${type} alert-toast`;
+        toastMessage.textContent = message;
+
+        // Show toast
+        toast.style.display = 'block';
+
+        // Auto hide after 3 seconds
+        setTimeout(hideToast, 3000);
+    }
+
+    function hideToast() {
+        document.getElementById('successToast').style.display = 'none';
+    }
+
+    async function markAllComplete() {
+        if (!confirm('Mark all todos as completed?')) return;
+
+        try {
+            const res = await fetch(API, { credentials: "include" });
+            const todos = await res.json();
+
+            const incompleteTodos = todos.filter(todo => !todo.completed);
+
+            // Update each incomplete todo
+            for (const todo of incompleteTodos) {
+                await fetch(`${API}/${todo.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ completed: true })
+                });
+            }
+
+            showToast('All todos marked as complete!', 'success');
+            loadTodos();
+        } catch (error) {
+            console.error('Error marking all complete:', error);
+            showToast('Failed to update todos', 'danger');
+        }
+    }
+
+    async function clearCompleted() {
+        if (!confirm('Delete all completed todos?')) return;
+
+        try {
+            const res = await fetch(API, { credentials: "include" });
+            const todos = await res.json();
+
+            const completedTodos = todos.filter(todo => todo.completed);
+
+            // Delete each completed todo
+            for (const todo of completedTodos) {
+                await fetch(`${API}/${todo.id}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                });
+            }
+
+            showToast('Completed todos cleared!', 'primary');
+            loadTodos();
+        } catch (error) {
+            console.error('Error clearing completed:', error);
+            showToast('Failed to clear todos', 'danger');
+        }
+    }
+
+    // Initialize
+    loadTodos();
+
+    // Add keyboard shortcut for Enter key
+    document.getElementById('todoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+
+    function editTodo(id) {
+    document.getElementById(`title-${id}`).classList.add('d-none');
+    document.getElementById(`edit-${id}`).classList.remove('d-none');
+    document.getElementById(`save-${id}`).classList.remove('d-none');
+}
+
+async function saveTodo(id) {
+    const newTitle = document.getElementById(`edit-${id}`).value.trim();
+    if (!newTitle) return showToast("Title cannot be empty", "warning");
+
+    await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ title: newTitle })
+    });
+
+    showToast("Todo updated!", "success");
+    loadTodos();
+}
+
+</script>
+</body>
+</html>
